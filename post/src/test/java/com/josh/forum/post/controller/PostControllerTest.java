@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,18 +38,18 @@ class PostControllerTest {
 	@Test
 	public void testGetAllPosts() throws Exception {
 		List<User> mockUsers = new ArrayList<>();
-		mockUsers.add(new User(1, "", "", ""));
+		mockUsers.add(new User("", "", ""));
 
 		List<Post> mockPosts = new ArrayList<>();
 		mockPosts.add(new Post(1, "Mocked content 1"));
-		mockPosts.add(new Post(2, "Mocked content 2"));
+		mockPosts.add(new Post(1, "Mocked content 2"));
 
-		UserPosts userPosts = new UserPosts(mockUsers.get(0).getId(), mockPosts);
+		UserPosts userPosts = new UserPosts(1, mockPosts);
 
-		when(postService.getAllPostsByUserId(mockUsers.get(0).getId())).thenReturn(userPosts);
+		when(postService.getAllPostsByUserId(1)).thenReturn(userPosts);
 
 		mockMvc.perform(
-			MockMvcRequestBuilders.get("/1/posts/")
+			MockMvcRequestBuilders.get("/1/post/")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.posts", hasSize(2)))
@@ -62,15 +63,14 @@ class PostControllerTest {
 		mockPosts.add(new Post(1, "Mocked content 1"));
 		mockPosts.add(testPost);
 
-		UserPosts userPosts = new UserPosts(1, mockPosts);
-		when(postService.addPostByUserId(1)).thenReturn(userPosts);
+		when(postService.addPost(any(Post.class))).thenReturn(true);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/1/posts/")
+		mockMvc.perform(MockMvcRequestBuilders.post("/1/post/")
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON)
 			.characterEncoding("UTF-8")
 			.content(this.mapper.writeValueAsBytes(testPost)))
-			.andExpect(status().isOk());
+			.andExpect(status().isAccepted());
 	}
 
 }

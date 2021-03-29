@@ -44,9 +44,9 @@ class UserControllerTest {
 	public void testAddUser() throws Exception {
 		when(userService.addUser(any(User.class))).thenReturn(true);
 
-		User user = new User(1, "Joshin", "Johnson", "joshinjohnson@gmail.com");
+		User user = new User("Joshin", "Johnson", "joshinjohnson@gmail.com");
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/users/register")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/user/register")
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON)
 			.characterEncoding("UTF-8")
@@ -59,12 +59,12 @@ class UserControllerTest {
 	@Test
 	public void testGetAllUsers() throws Exception {
 		List<User> mockUsers = new ArrayList<>();
-		mockUsers.add(new User(1, "Joshin", "Johnson", "john@gmail.com"));
-		mockUsers.add(new User(2, "Zoshin", "Zohnson", "zohn@gmail.com"));
+		mockUsers.add(new User("Joshin", "Johnson", "john@gmail.com"));
+		mockUsers.add(new User("Zoshin", "Zohnson", "zohn@gmail.com"));
 		when(userService.getAllUsers()).thenReturn(mockUsers);
 
 		mockMvc.perform(
-			MockMvcRequestBuilders.get("/users/")
+			MockMvcRequestBuilders.get("/user/")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(2)))
